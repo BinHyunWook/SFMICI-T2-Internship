@@ -1,0 +1,133 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Make a VPC 
+
+Resources:
+  cloudParkPh4VPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.0.0.0/16
+      EnableDnsHostnames: true
+      Tags: 
+      - Key: Name
+        Value: cloud-park-ph4-VPC
+      - Key: SDSID
+        Value: cloud-park
+
+  cloudParkInternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Properties: 
+      Tags: 
+      - Key: Name
+        Value: cloud-park-Internet-Gateway
+      - Key: SDSID
+        Value: cloud-park
+
+
+  AttachGateway:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref cloudParkPh4VPC
+      InternetGatewayId: !Ref cloudParkInternetGateway
+
+  cloudParkph4PublicSubnet01:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref cloudParkPh4VPC
+      CidrBlock: 10.0.0.0/24
+      AvailabilityZone: !Select
+        - '0'
+        - !GetAZs ''
+
+  cloudParkPh4PublicSubnet02:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref cloudParkPh4VPC
+      CidrBlock: 10.0.1.0/24
+      AvailabilityZone: !Select
+        - '1'
+        - !GetAZs ''
+
+  cloudParkPh4PrivateSubnet01:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref cloudParkPh4VPC
+      CidrBlock: 10.0.2.0/23
+      AvailabilityZone: !Select
+        - '0'
+        - !GetAZs ''
+
+  cloudParkPh4PrivateSubnet02:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref cloudParkPh4VPC
+      CidrBlock: 10.0.4.0/23
+      AvailabilityZone: !Select
+        - '0'
+        - !GetAZs ''
+
+  cloudParkPublicRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref cloudParkPh4VPC
+      Tags: 
+      - Key: Name
+        Value: cloud-park-Public-RoutingTable
+      - Key: SDSID
+        Value: cloud-park
+
+  PublicRoute:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref cloudParkPublicRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref cloudParkInternetGateway
+
+  PublicSubnetRouteTableAssociation1:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref cloudParkph4PublicSubnet01
+      RouteTableId: !Ref cloudParkPublicRouteTable
+
+  PublicSubnetRouteTableAssociation2:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref cloudParkPh4PublicSubnet02
+      RouteTableId: !Ref cloudParkPublicRouteTable
+
+  PrivateRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref cloudParkPh4VPC
+      Tags: 
+        - Key: Name
+          Value: cloud-park-Private-RoutingTable
+        - Key: SDSID
+          Value: cloud-park
+
+  PrivateSubnetRouteTableAssociation1:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref cloudParkPh4PrivateSubnet01
+      RouteTableId: !Ref PrivateRouteTable
+
+  PrivateSubnetRouteTableAssociation2:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref cloudParkPh4PrivateSubnet02
+      RouteTableId: !Ref PrivateRouteTable
+
+Outputs:
+  VPC:
+    Description: cloudParkPh4VPC
+    Value: !Ref cloudParkPh4VPC
+    
+  AZ1:
+    Description: Availability Zone 1
+    Value: !GetAtt
+      - cloudParkph4PublicSubnet01
+      - AvailabilityZone
+  AZ2:
+    Description: Availability Zone 2
+    Value: !GetAtt
+      - cloudParkPh4PublicSubnet02
+      - AvailabilityZone
