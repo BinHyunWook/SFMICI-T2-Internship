@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mydb-read
+  ## [수정필요] 개인 네임스페이스 지정
+  namespace: <KnoxID>
+  labels:
+    app: mydb
+    knoxid: <KnoxID>
+spec:
+  ## [수정필요] 단순 읽기전용 서비스를 위해 ClusterIP 타입 Service를 배포

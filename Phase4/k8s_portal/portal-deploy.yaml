@@ -1,0 +1,14 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kukie-portal
+  ## [수정필요] 개인 네임스페이스 지정
+  namespace: <KnoxID>
+  labels:
+    app: kukie-portal
+    knoxid: <KnoxID>
+spec:
+  ## [수정필요] 포탈 Deployment 배포
+  # replicas: 2, image: 본인이 빌드한 이미지명, containerPort: 8080
+  # application.properties의 MySQL 접속 정보를 환경변수로 읽어올 수 있도록 셋팅
+  

@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mydb-config
+  ## [수정필요] 개인 네임스페이스 지정
+  namespace: <KnoxID>
+  labels:
+    app: mydb
+    knoxid: <KnoxID>
+data:
+  ## 아래 데이터 수정 금지
+  ## Master → Slave 데이터 복제를 위해 Master의 쓰기 데이터 로깅
+  master.cnf: |
+    [mysqld]
+    log-bin
+  ## Slave에서 쓰기 기능을 차단
+  slave.cnf: |
+    [mysqld]
+    super-read-only
