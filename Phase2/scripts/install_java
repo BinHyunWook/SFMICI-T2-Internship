@@ -1,0 +1,14 @@
+#!/bin/bash
+echo "Java Install Process"
+#install_check 
+rpm -qa | grep java-11-amazon-corretto-11.0.16+8-1.amzn2.x86_64 >> /home/ec2-user/target/javaChkresult.txt
+FILE="/home/ec2-user/target/javaChkresult.txt"
+
+#Waiting Java
+while ! [ -s $FILE ]
+do
+	echo "Install Java Waiting..."
+	sleep 5
+    rpm -qa | grep java-11-amazon-corretto-11.0.16+8-1.amzn2.x86_64 >> /home/ec2-user/target/javaChkresult.txt
+    FILE="/home/ec2-user/target/javaChkresult.txt"
+done
